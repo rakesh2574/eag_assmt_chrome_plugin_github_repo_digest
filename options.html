@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GitHub Repo Digest &mdash; Settings</title>
+  <link rel="stylesheet" href="popup.css" />
+  <style>
+    body { width: 520px; max-height: none; }
+    .field { margin-top: 12px; }
+    input[type=password], input[type=text] {
+      width: 100%;
+      padding: 9px 10px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+    .help {
+      color: var(--muted);
+      font-size: 11.5px;
+      margin-top: 6px;
+    }
+    .help a { color: var(--gold); }
+    .row2 { display: flex; gap: 8px; align-items: center; margin-top: 10px; }
+    .saved-msg { color: var(--green); font-size: 12px; }
+    .masked { color: var(--muted); font-size: 11.5px; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <header class="hdr">
+    <div class="title">
+      <span class="logo">GD</span>
+      <span>Settings</span>
+    </div>
+  </header>
+
+  <section>
+    <h3>OpenAI API key</h3>
+    <div class="field">
+      <input id="apiKey" type="password" placeholder="sk-&hellip;" autocomplete="off" />
+      <div id="masked" class="masked"></div>
+      <div class="help">
+        Get a key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>.
+        The key is stored locally in <code>chrome.storage.local</code> on this device only.
+        This extension uses the <code>gpt-4o-mini</code> model.
+      </div>
+    </div>
+    <div class="row2">
+      <button id="saveBtn" class="primary">Save</button>
+      <button id="clearBtn" class="primary" style="background: var(--surface-2); color: var(--text);">Clear</button>
+      <span id="savedMsg" class="saved-msg"></span>
+    </div>
+  </section>
+
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "GitHub Repo Digest",
+  "version": "1.0.0",
+  "description": "Agentic AI analyzer for GitHub repos. Uses GPT-4o-mini + live GitHub API to give you a verdict: what it does, how active, should you use it.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "https://api.github.com/*",
+    "https://api.openai.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

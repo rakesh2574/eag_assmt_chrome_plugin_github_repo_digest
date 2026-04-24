@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GitHub Repo Digest</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="hdr">
+    <div class="title">
+      <span class="logo">GD</span>
+      <span>GitHub Repo Digest</span>
+    </div>
+    <a id="openOptions" class="gear" href="#" title="Settings">&#9881;</a>
+  </header>
+
+  <section id="target" class="target">
+    <div class="target-label">Repository</div>
+    <div id="repoName" class="repo-name">Detecting&hellip;</div>
+  </section>
+
+  <section class="controls">
+    <button id="runBtn" class="primary" disabled>Analyze Repo</button>
+    <span id="status" class="status"></span>
+  </section>
+
+  <section id="chainSection" class="chain-section hidden">
+    <h3>Reasoning chain</h3>
+    <div id="chain" class="chain"></div>
+  </section>
+
+  <section id="reportSection" class="report-section hidden">
+    <h3>Final report</h3>
+    <div id="report" class="report"></div>
+  </section>
+
+  <footer class="foot">
+    <span>EAG V3 &middot; Session 3</span>
+    <span>OpenAI GPT-4o-mini</span>
+  </footer>
+
+  <script src="tools.js"></script>
+  <script src="openai.js"></script>
+  <script src="agent.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

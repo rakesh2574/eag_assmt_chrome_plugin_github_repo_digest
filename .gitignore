@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Python leftovers from previous project
+.venv/
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/
+
+# Env files (NEVER commit API keys)
+.env
+.env.local
+*.key
+
+# Logs
+*.log
+
+# Node
+node_modules/
