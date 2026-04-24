@@ -54,6 +54,41 @@ LLM → final_answer                  → "USE_WITH_CAVEATS — active but fast-
 
 Watch each reasoning step stream in. When the agent is done, the final verdict card appears below the chain.
 
+## Grabbing the LLM logs
+
+After a run completes, a **Copy logs** button appears next to **Analyze Repo**. Click it — the full transcript is copied to your clipboard in this format:
+
+```
+=== GitHub Repo Digest — LLM conversation log ===
+Repository : microsoft/autogen
+Model      : gpt-4o-mini
+Started at : 2026-04-24T...
+
+--- LLM CALL #1 — messages sent (2) ---
+[system]
+You are a GitHub repository analyzer agent...
+
+[user]
+Analyze this repository: owner="microsoft", repo="autogen". Begin.
+
+--- LLM CALL #1 — raw model response ---
+{"action":"tool_call","tool_name":"fetch_readme","args":{...}}
+
+--- TOOL CALL: fetch_readme ---
+args: {...}
+
+--- TOOL RESULT: fetch_readme ---
+{...}
+
+--- LLM CALL #2 — messages sent (4) ---
+...
+
+=== FINAL REPORT ===
+{...}
+```
+
+Paste that straight into your assignment submission. Every LLM request (the full `messages` array, which grows each turn) and every model response is included — that is the audit trail for condition C3. For a second source, right-click the popup → **Inspect** → **Console**: `agent.js` also `console.log`s each call.
+
 ## Try it on
 
 - Active: `https://github.com/microsoft/autogen`, `https://github.com/openai/openai-python`

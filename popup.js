@@ -6,6 +6,7 @@ const $ = (id) => document.getElementById(id);
 
 const repoNameEl   = $("repoName");
 const runBtn       = $("runBtn");
+const copyBtn      = $("copyBtn");
 const statusEl     = $("status");
 const chainSection = $("chainSection");
 const chainEl      = $("chain");
@@ -15,6 +16,8 @@ const openOptions  = $("openOptions");
 
 let currentRepo = null;   // { owner, repo } or null
 let apiKey = null;
+let runLog = [];          // every step event, used to build the copy-paste transcript
+let runStartedAt = null;
 
 openOptions.addEventListener("click", (e) => {
   e.preventDefault();
@@ -123,12 +126,19 @@ function addPre(parent, text) {
 }
 
 function renderStep(step) {
+  // Capture every step for the copy-logs button, regardless of whether we also render it.
+  runLog.push({ ...step, ts: new Date().toISOString() });
+
   chainSection.classList.remove("hidden");
   const t = step.type;
   const p = step.payload || {};
   let card, body;
 
-  if (t === "llm_decision") {
+  if (t === "llm_request") {
+    const title = `Step ${p.iteration}: sending ${p.messages.length}-message history to LLM`;
+    ({ card, body } = makeStep("req", title));
+    addPre(body, JSON.stringify(p.messages, null, 2));
+  } else if (t === "llm_decision") {
     const action = p.parsed?.action || "?";
     const title = `Step ${p.iteration}: LLM chose "${action}"`;
     ({ card, body } = makeStep("llm", title));
@@ -216,6 +226,13 @@ runBtn.addEventListener("click", async () => {
   reportEl.innerHTML = "";
   reportSection.classList.add("hidden");
 
+  // Reset log for this run
+  runLog = [];
+  runStartedAt = new Date().toISOString();
+  copyBtn.classList.add("hidden");
+  copyBtn.classList.remove("copied");
+  copyBtn.textContent = "Copy logs";
+
   try {
     const report = await window.runAgent({
       owner: currentRepo.owner,
@@ -230,6 +247,74 @@ runBtn.addEventListener("click", async () => {
     statusEl.classList.remove("running");
     statusEl.textContent = "";
     runBtn.disabled = false;
+    if (runLog.length > 0) copyBtn.classList.remove("hidden");
+  }
+});
+
+// ---------- Log transcript builder ----------
+function buildTranscript() {
+  const lines = [];
+  const repoStr = currentRepo ? `${currentRepo.owner}/${currentRepo.repo}` : "unknown";
+  lines.push(`=== GitHub Repo Digest — LLM conversation log ===`);
+  lines.push(`Repository : ${repoStr}`);
+  lines.push(`Model      : gpt-4o-mini`);
+  lines.push(`Started at : ${runStartedAt || "?"}`);
+  lines.push(``);
+
+  for (const step of runLog) {
+    const p = step.payload || {};
+    if (step.type === "llm_request") {
+      lines.push(`--- LLM CALL #${p.iteration} — messages sent (${p.messages.length}) ---`);
+      for (const m of p.messages) {
+        lines.push(`[${m.role}]`);
+        lines.push(m.content);
+        lines.push(``);
+      }
+    } else if (step.type === "llm_decision") {
+      lines.push(`--- LLM CALL #${p.iteration} — raw model response ---`);
+      lines.push(p.raw || JSON.stringify(p.parsed));
+      lines.push(``);
+    } else if (step.type === "tool_call") {
+      lines.push(`--- TOOL CALL: ${p.tool_name} ---`);
+      lines.push(`args: ${JSON.stringify(p.args)}`);
+      lines.push(``);
+    } else if (step.type === "tool_result") {
+      lines.push(`--- TOOL RESULT: ${p.tool_name} ---`);
+      lines.push(JSON.stringify(p.result, null, 2));
+      lines.push(``);
+    } else if (step.type === "final") {
+      lines.push(`=== FINAL REPORT ===`);
+      lines.push(JSON.stringify(p, null, 2));
+      lines.push(``);
+    } else if (step.type === "error") {
+      lines.push(`!!! ERROR !!!`);
+      lines.push(JSON.stringify(p, null, 2));
+      lines.push(``);
+    }
+  }
+  return lines.join("\n");
+}
+
+copyBtn.addEventListener("click", async () => {
+  const text = buildTranscript();
+  try {
+    await navigator.clipboard.writeText(text);
+    copyBtn.classList.add("copied");
+    copyBtn.textContent = "Copied!";
+    setTimeout(() => {
+      copyBtn.classList.remove("copied");
+      copyBtn.textContent = "Copy logs";
+    }, 1800);
+  } catch (e) {
+    // Fallback: select into a temp textarea and execCommand
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch (_) {}
+    document.body.removeChild(ta);
+    copyBtn.textContent = "Copied (fallback)";
+    setTimeout(() => (copyBtn.textContent = "Copy logs"), 1800);
   }
 });
 

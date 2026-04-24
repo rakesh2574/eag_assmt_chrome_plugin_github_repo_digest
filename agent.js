@@ -57,6 +57,16 @@ async function runAgent({ owner, repo, apiKey, onStep }) {
   const MAX_ITERATIONS = 8;
 
   for (let i = 0; i < MAX_ITERATIONS; i++) {
+    // Emit the exact payload we're about to send, so popup.js can log it.
+    onStep({
+      type: "llm_request",
+      payload: {
+        iteration: i + 1,
+        messages: JSON.parse(JSON.stringify(messages))
+      }
+    });
+    console.log(`[agent] LLM call #${i + 1} — messages:`, messages);
+
     let rawResponse;
     try {
       rawResponse = await callLLM(apiKey, messages);
@@ -64,6 +74,7 @@ async function runAgent({ owner, repo, apiKey, onStep }) {
       onStep({ type: "error", payload: { message: "LLM call failed: " + e.message } });
       return null;
     }
+    console.log(`[agent] LLM response #${i + 1}:`, rawResponse);
 
     let parsed;
     try {
@@ -76,7 +87,7 @@ async function runAgent({ owner, repo, apiKey, onStep }) {
       return null;
     }
 
-    onStep({ type: "llm_decision", payload: { iteration: i + 1, parsed } });
+    onStep({ type: "llm_decision", payload: { iteration: i + 1, raw: rawResponse, parsed } });
 
     // Keep the model's literal response in history — C3.
     messages.push({ role: "assistant", content: rawResponse });

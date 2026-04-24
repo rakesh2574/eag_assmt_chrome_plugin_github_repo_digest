@@ -115,6 +115,19 @@ body {
 }
 .primary:not(:disabled):hover { filter: brightness(1.06); }
 
+.secondary {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 12px;
+}
+.secondary:hover { border-color: var(--gold); color: var(--gold); }
+.secondary.copied { border-color: var(--green); color: var(--green); }
+
 .status {
   color: var(--muted);
   font-size: 12px;
@@ -162,6 +175,7 @@ h3 {
   font-size: 12px;
 }
 .step.llm      { border-left-color: var(--gold); }
+.step.req      { border-left-color: var(--muted); }
 .step.tool     { border-left-color: var(--purple); }
 .step.result   { border-left-color: var(--green); }
 .step.err      { border-left-color: var(--red); }
