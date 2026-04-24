@@ -22,9 +22,8 @@ Every reasoning step — each LLM decision, each tool call, each tool result —
 
 ## Demo video
 
-> Placeholder — paste the unlisted YouTube link here when recorded.
->
-> **https://youtube.com/watch?v=YOUR_VIDEO_ID**
+https://www.youtube.com/watch?v=jxfF3So1qvU
+
 
 ## The agent loop (example trace)
 
